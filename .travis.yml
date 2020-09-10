@@ -5,6 +5,7 @@ import:
 - land-of-apps/land-of-apps:travis/ruby-imports.yml
 
 script:
+- bundle exec rake # also sets up testing db
 - APPMAP=true bundle exec rspec
 
 after_script:
