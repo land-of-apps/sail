@@ -1,5 +1,9 @@
 # Turn on validation, so we can use import:
 version: ~> 1.0
 
+before_script:
+- rails g sail:install
+
 script:
-- bundle exec rspec
+- bundle exec rake
+
