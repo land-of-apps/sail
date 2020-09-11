@@ -9,6 +9,3 @@ script:
 # both commands set up testing env and generate all appmaps correctly
 - bundle exec rake
 - APPMAP=true bundle exec rspec
-
-after_script:
-- env DEBUG=true ruby ./upload-appmaps tmp/appmap/rspec
