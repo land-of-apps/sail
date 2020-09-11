@@ -1,35 +1,11 @@
-sudo: false
-language: ruby
-cache:
-  directories:
-    - vendor/bundle
-rvm:
-  - 2.3.8
-  - 2.4.8
-  - 2.5.7
-  - 2.6.5
-  - ruby-head
-addons:
-  apt:
-    packages:
-      - google-chrome-stable
-env:
-  - "RAILS_VERSION=4.2.11.1 BUNDLER_VERSION=1.17.3"
-  - "RAILS_VERSION=5.2.3 BUNDLER_VERSION=2.0.2"
-  - "RAILS_VERSION=6.0.0 BUNDLER_VERSION=2.0.2"
-matrix:
-  allow_failures:
-    - rvm: ruby-head
-  exclude:
-    - rvm: 2.3.8
-      env: "RAILS_VERSION=6.0.0 BUNDLER_VERSION=2.0.2"
-    - rvm: 2.4.8
-      env: "RAILS_VERSION=6.0.0 BUNDLER_VERSION=2.0.2"
-    - rvm: ruby-head
-      env: "RAILS_VERSION=4.2.11.1 BUNDLER_VERSION=1.17.3"
-before_install:
-  - rm Gemfile.lock
-  - gem install bundler -v ${BUNDLER_VERSION}
-install:
-  - bundle _${BUNDLER_VERSION}_ install --path vendor/bundle
-after_success: bundle exec codeclimate-test-reporter
+# Turn on validation, so we can use import:
+version: ~> 1.0
+
+import:
+- land-of-apps/land-of-apps:travis/ruby-imports.yml
+
+script:
+# current workaround - rake sets up testing env but only generates 5 appmaps
+# both commands set up testing env and generate all appmaps correctly
+- bundle exec rake
+- APPMAP=true bundle exec rspec
