@@ -3,6 +3,8 @@
 source "https://rubygems.org"
 gemspec
 
+gem 'appmap', github: 'applandinc/appmap-ruby', branch: 'master'
+
 gem "capybara", "< 3.19.0" unless ENV["TRAVIS_RUBY_VERSION"].nil? || ENV["TRAVIS_RUBY_VERSION"] >= "2.4.0"
 gem "sassc-rails"
 gem "rails", (ENV["RAILS_VERSION"] || ">= 4.0.0") # rubocop:disable Bundler/OrderedGems
