@@ -1,0 +1,11 @@
+# Turn on validation, so we can use import:
+version: ~> 1.0
+
+import:
+- land-of-apps/land-of-apps:travis/ruby-imports.yml
+
+script:
+# current workaround - rake sets up testing env but only generates 5 appmaps
+# both commands set up testing env and generate all appmaps correctly
+- bundle exec rake
+- APPMAP=true bundle exec rspec

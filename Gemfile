@@ -3,6 +3,8 @@
 source "https://rubygems.org"
 gemspec
 
+gem 'appmap', github: 'applandinc/appmap-ruby', branch: 'master'
+
 jruby_sqlite3_adapter = if ENV["RAILS_VERSION"].nil? || ENV["RAILS_VERSION"].to_s >= "6.0.0"
                           ">= 52.3"
                         else
