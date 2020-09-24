@@ -41,6 +41,39 @@ class WardenObject
   end
 end
 
+=begin
+# This successfully started and finished recording around an `it`
+block. It didn't capture any application events, though, because all
+the interesting stuff happens in the `before` block when `visit` is
+called.
+
+module DoRemoteRecording
+  def server
+    [:host,:port].map{|a| Capybara.current_session.server.send(a)}.join(':')
+  end
+  def begin_spec(example)
+    super
+
+    Faraday.post("http://#{server}/_appmap/record")
+  end
+
+  def end_spec(example)
+    f = super
+    
+    conn = Faraday.new("http://#{server}/_appmap/record") do |c|
+      c.response :raise_error
+      c.adapter Faraday.default_adapter
+    end
+    appmap = conn.delete.body
+    
+    File.write(f.sub('.appmap.json', '-remote.appmap.json'), appmap, mode: 'wb')
+  end
+end
+
+
+AppMap::RSpec.singleton_class.prepend(DoRemoteRecording)
+=end
+
 RSpec.configure do |config|
   config.expect_with :rspec do |c|
     c.syntax = :expect
@@ -65,6 +98,26 @@ RSpec.configure do |config|
     ex.run_with_retry retry: 3
   end
 
+  config.around :each , type: :feature do |ex|
+    require 'faraday'
+
+    # `Capybara.current_session.server` currently fails, because
+    # there's no session yet -- it gets created sometime during the
+    # processing of `visit`.
+    server = [:host,:port].map{|a| Capybara.current_session.server.send(a)}.join(':')
+    Faraday.post("http://#{server}/_appmap/record")
+    begin
+      ex.run
+    ensure
+      conn = Faraday.new("http://#{server}/_appmap/record") do |c|
+        c.response :raise_error
+        c.adapter Faraday.default_adapter
+      end
+      appmap = conn.delete.body
+      true
+    end
+  end
+  
   Capybara.register_driver :chrome do |app|
     Capybara::Selenium::Driver.new(app, browser: :chrome)
   end
@@ -81,9 +134,16 @@ RSpec.configure do |config|
     Capybara::Selenium::Driver.new(app, browser: :chrome, options: options)
   end
 
+  # Capybara starts a new instance of puma in the current process. I'm
+  # not sure whether it clears out the environment, so I don't know
+  # for sure that `APPMAP` needs to be specified here.
+  Capybara.register_server :sail_puma do |app, port, host, **options|
+    Capybara.servers[:puma].call(app, port, host, environment: {:Verbose => true, 'APPMAP' => 'true', 'DEBUG' => 'true'})
+  end
+  
   Capybara.javascript_driver = :headless_chrome
-  Capybara.server = :webrick
-  Capybara.default_max_wait_time = 5
+  Capybara.server = :sail_puma
+  Capybara.default_max_wait_time = 9999
   Webdrivers.install_dir = "~/bin/chromedriver" if ENV["ON_CI"].present?
 end
 
