@@ -13,3 +13,8 @@ gem "rspec-rails", (ENV["RAILS_VERSION"].nil? || ENV["RAILS_VERSION"].to_s >= "6
 gem "sqlite3",
     (ENV["RAILS_VERSION"].nil? || ENV["RAILS_VERSION"].to_s >= "6.0.0" ? ">= 1.4.0" : "< 1.4.0"),
     platforms: %i[mri mingw x64_mingw]
+
+# TBH, I don't remember why I switched to puma. Could be I wanted the
+# support for `:Verbose`, or maybe something else?
+gem 'puma'
+gem 'pry-byebug'
