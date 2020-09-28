@@ -1,0 +1,6 @@
+name: sail
+packages:
+- path: app/controllers
+- path: app/helpers
+- path: app/models
+- path: lib
