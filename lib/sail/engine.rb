@@ -7,6 +7,7 @@ module Sail
   class Engine < ::Rails::Engine
     require "jquery-rails" if Rails::VERSION::MAJOR < 5
     require "sprockets/railtie"
+    require "appmap/railtie"
     isolate_namespace Sail
 
     config.generators do |g|
