@@ -6,6 +6,7 @@ module Sail
   # after initialize hooks
   class Engine < ::Rails::Engine
     require "sprockets/railtie"
+    require "appmap/railtie"
     isolate_namespace Sail
 
     config.generators do |g|
